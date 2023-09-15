@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\admin\AdminHomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\AdminHomeController;
 use App\Http\Controllers\admin\AdminLoginController;
 
 Route::get('/', function () {
@@ -18,5 +19,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::group(['middleware' => 'admin.auth'], function () {
         Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('admin.dashboard');
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
+
+        Route::get("/categories/create", [CategoryController::class, 'createCategory'])->name('categories.create');
+        Route::post("/categories/create", [CategoryController::class, 'storeCategory'])->name('categories.store');
     });
 });
