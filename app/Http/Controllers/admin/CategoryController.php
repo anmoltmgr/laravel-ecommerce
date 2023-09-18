@@ -10,9 +10,18 @@ use Illuminate\Support\Facades\Validator;
 class CategoryController extends Controller
 {
 
-    // public function categoryIndex()
-    // {
-    // }
+    public function categoryIndex(Request $request)
+    {
+        $categories = Category::latest();
+
+        if (!empty($request->get('keyword'))) {
+            $categories = $categories->where('name', 'like', '%' . $request->get('keyword') . '%');
+        }
+
+        $categories = $categories->paginate(10);
+
+        return view('admin.category.index', compact('categories'));
+    }
 
     public function createCategory()
     {
