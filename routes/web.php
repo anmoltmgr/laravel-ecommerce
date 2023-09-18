@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\AdminHomeController;
@@ -22,5 +24,16 @@ Route::group(['prefix' => 'admin'], function () {
 
         Route::get("/categories/create", [CategoryController::class, 'createCategory'])->name('categories.create');
         Route::post("/categories/create", [CategoryController::class, 'storeCategory'])->name('categories.store');
+
+        Route::get('/getSlug', function (Request $request) {
+            $slug = '';
+            if (!empty($request->title)) {
+                $slug = Str::slug($request->title);
+            }
+            return response()->json([
+                'status' => true,
+                'slug' => $slug
+            ]);
+        })->name('getSlug');
     });
 });

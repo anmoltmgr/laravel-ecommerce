@@ -58,38 +58,54 @@
 @endsection
 
 @section('customJs')
-    <script>
-        $("#categoryForm").submit(function(event){
-            event.preventDefault();
-            console.log("hello");
-            var element = $(this);
-            $.ajax({
-                url : '{{route("categories.store")}}',
-                type: 'post',
-                data: element.serializeArray(),
-                dataType: 'json',
-                success: function(response){
-                    if(response['status']==true){
-                        $("#name").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                        $("#slug").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+<script>
+    $("#categoryForm").submit(function(event){
+        event.preventDefault();
+        var element = $(this);
+        $.ajax({
+            url : '{{route("categories.store")}}',
+            type: 'post',
+            data: element.serializeArray(),
+            dataType: 'json',
+            success: function(response){
+                if(response['status']==true){
+                    $("#name").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                    $("#slug").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                } else{
+                    var errors = response['errors'];
+                    if(errors['name']){
+                        $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors['name']);
+                    }  else{
+                        $("#name").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html(errors['name']);
+                    } 
+                    if(errors['slug']){
+                        $("#slug").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors['slug']);
                     } else{
-                        var errors = response['errors'];
-                        if(errors['name']){
-                            $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors['name']);
-                        }  else{
-                            $("#name").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html(errors['name']);
-                        } 
-                        if(errors['slug']){
-                            $("#slug").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors['slug']);
-                        } else{
-                            $("#slug").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html(errors['slug']);
-                        }
+                        $("#slug").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html(errors['slug']);
                     }
-                    },
-                    error: function(jqXHR, exception){
-                        console.log("Something went Wrong");
                 }
-            })
+                },
+                error: function(jqXHR, exception){
+                    console.log("Something went Wrong");
+            }
+        })
+    });
+
+    $("#name").change(function(){
+        element = $(this)
+        console.log("hello")
+        $.ajax({
+            url: '{{ route("getSlug") }}',
+            type: 'get',
+            data: {title:element.val()},
+            dataType: 'json',
+            success: function(response){
+                if(response["status"] == true ){
+                    $("#slug").val(response["slug"])
+                }
+            }
         });
-    </script>
+    });
+    
+</script>
 @endsection

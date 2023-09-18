@@ -58,10 +58,12 @@
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-lock mr-2"></i> Change Password
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{route('admin.logout')}}" class="dropdown-item text-danger">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
+                        <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </button>
+                        </form>
                     </div>
                 </li>
             </ul>
