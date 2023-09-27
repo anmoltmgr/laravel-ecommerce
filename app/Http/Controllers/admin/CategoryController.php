@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\TempImage;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Image;
 
 class CategoryController extends Controller
 {
@@ -36,7 +39,34 @@ class CategoryController extends Controller
 
         ]);
         if ($validator->passes()) {
-            Category::create($request->all());
+            $category = new Category();
+            $category->name = $request->name;
+            $category->slug = $request->slug;
+            $category->status = $request->status;
+            $category->save();
+
+
+            if (!empty($request->image_id)) {
+                $tempImage = TempImage::find($request->image_id);
+                $extArray = explode('.', $tempImage->name);
+                $ext = last($extArray);
+
+                $newImageName = $category->id . '.' . $ext;
+                $srcPath = public_path() . '/temp/' . $tempImage->name;
+                $destPath = public_path() . '/uploads/category/' . $tempImage->name;
+                File::copy($srcPath, $destPath);
+
+                // Generate  Image Thumbnail
+                $destPath = public_path() . '/uploads/category/thumb/' . $tempImage->name;
+
+                $img = Image::make($srcPath);
+                $img->resize(450, 600);
+                $img->save($destPath);
+
+
+                $category->image = $newImageName;
+                $category->save();
+            }
 
             $request->session()->flash('success', 'Category added successfully');
             return response()->json([
